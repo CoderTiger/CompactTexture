@@ -7,9 +7,9 @@ This is a set of shaders that supports splitting 1 texture into 4 equal parts an
 ## Examples
 - Cutoff without scaling texture.
 
-<img src="/Documents/Images/exampleA.png" width="380" height="380" alt="example A"></img>
-<img src="/Documents/Images/materialA.png" width="431" height="632" alt="material A"></img>
+<img src="/Documents/Images/exampleA.png" width="320" height="320" alt="example A"></img>
+<img src="/Documents/Images/materialA.png" width="345" height="506" alt="material A"></img>
 - Cutoff with scaling texture.
 
-<img src="/Documents/Images/exampleB.png" width="380" height="380" alt="example B"></img>
-<img src="/Documents/Images/materialB.png" width="431" height="632" alt="material B"></img>
+<img src="/Documents/Images/exampleB.png" width="320" height="320" alt="example B"></img>
+<img src="/Documents/Images/materialB.png" width="345" height="506" alt="material B"></img>
