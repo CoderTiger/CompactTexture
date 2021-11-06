@@ -31,6 +31,7 @@ Shader "CompactTexture/Mobile/Bumped Cutoff" {
         _SubTex3("Base (RGB)", Vector) = (1.0, 1.0, 0.0, 0.0)
         _SubNormal3("Normalmap", Vector) = (1.0, 1.0, 0.0, 0.0)
 
+        _SeamCleaner("Seam Cleaner", Range(0.5, 1)) = 0.996
     }
     SubShader {
         Tags {

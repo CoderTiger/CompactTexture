@@ -19,7 +19,6 @@ Shader "CompactTexture/Mobile/Simple Bumped Cutoff" {
     
         CGPROGRAM
         #pragma surface surf Lambert noforwardadd
-        #include "CGIIncludes/CompactTextureCommon.cginc"
         
         sampler2D _MainTex;
         sampler2D _BumpMap;

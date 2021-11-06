@@ -25,6 +25,8 @@ Shader "CompactTexture/Mobile/Cutoff" {
         _SubTex3Cutoff ("Alpha Cutoff", Range(0, 1)) = 0.5
         [Toggle(SUBTEX3_ENABLE_ON)]_SubTex3Enabled("Scale(X, Y) & Offset(Z, W) enable?", Int) = 1
         _SubTex3("", Vector) = (1.0, 1.0, 0.0, 0.0)
+
+        _SeamCleaner("Seam Cleaner", Range(0.5, 1)) = 0.996
     }
     SubShader {
         Tags {

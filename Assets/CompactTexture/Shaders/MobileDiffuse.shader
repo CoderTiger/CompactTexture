@@ -14,6 +14,8 @@ Shader "CompactTexture/Mobile/Diffuse" {
         _SubTex2("Scale(X, Y), Offset(Z, W)", Vector) = (1.0, 1.0, 0.0, 0.0)
         [Toggle(SUBTEX3_ENABLE_ON)]_SubTex3Enabled("Sub-texture 3 [(0.5, 0.5), (1, 1)]: Scale & Offset enable?", Int) = 1
         _SubTex3("Scale(X, Y), Offset(Z, W)", Vector) = (1.0, 1.0, 0.0, 0.0)
+
+        _SeamCleaner("Seam Cleaner", Range(0.5, 1)) = 0.996
     }
     SubShader {
         Tags { "RenderType"="Opaque" }
@@ -39,5 +41,4 @@ Shader "CompactTexture/Mobile/Diffuse" {
         ENDCG
     }
     Fallback "Mobile/Diffuse"
-    //CustomEditor "CompactTexturesShaderGUI"
 }
