@@ -5,6 +5,9 @@
 #ifndef COMPACT_TEXTURE_COMMON_INCLUDED
 #define COMPACT_TEXTURE_COMMON_INCLUDED
 
+sampler2D _MainTex;
+sampler2D _BumpMap;
+
 bool _SubTex0Enabled;
 bool _SubTex1Enabled;
 bool _SubTex2Enabled;
@@ -18,16 +21,32 @@ float4 _SubNormal1;
 float4 _SubNormal2;
 float4 _SubNormal3;
 
-bool _SubTex0CutoffEnabled;
-bool _SubTex1CutoffEnabled;
-bool _SubTex2CutoffEnabled;
-bool _SubTex3CutoffEnabled;
-fixed _SubTex0Cutoff;
-fixed _SubTex1Cutoff;
-fixed _SubTex2Cutoff;
-fixed _SubTex3Cutoff;
+bool _SubCutoff0Enabled;
+bool _SubCutoff1Enabled;
+bool _SubCutoff2Enabled;
+bool _SubCutoff3Enabled;
+fixed _Cutoff;
+fixed _SubCutoff0;
+fixed _SubCutoff1;
+fixed _SubCutoff2;
+fixed _SubCutoff3;
+
+half4 _EmissionColor;
+sampler2D _EmissionMap;
+bool _SubEmission0Enabled;
+bool _SubEmission1Enabled;
+bool _SubEmission2Enabled;
+bool _SubEmission3Enabled;
+half4 _SubEmissionColor0;
+half4 _SubEmissionColor1;
+half4 _SubEmissionColor2;
+half4 _SubEmissionColor3;
 
 fixed _SeamCleaner;
+
+struct Input {
+            float2 uv_MainTex;
+        };
 
 float2 CompactUV(float2 uv) {
     float2 compactUV = uv;
@@ -175,29 +194,96 @@ void CompactClip(fixed alpha, float2 uv) {
     if (uv.y < 0.5) {
         // sub texture 0, [(0, 0), (0.5, 0.5)]
         if (uv.x < 0.5) {
-            if (_SubTex0CutoffEnabled) {
-                clip(alpha - _SubTex0Cutoff);
+            if (_SubTex0Enabled && _SubCutoff0Enabled) {
+                clip(alpha - _SubCutoff0);
             }
         // sub texture 1, [(0.5, 0), (1, 0.5)]
         } else {
-            if (_SubTex1CutoffEnabled) {
-                clip(alpha - _SubTex1Cutoff);
+            if (_SubTex1Enabled && _SubCutoff1Enabled) {
+                clip(alpha - _SubCutoff1);
             }
         }
     }
     else {
         // sub texture 2, [(0, 0.5), (0.5, 1)]
         if (uv.x < 0.5) {
-            if (_SubTex2CutoffEnabled) {
-                clip(alpha - _SubTex2Cutoff);
+            if (_SubTex2Enabled && _SubCutoff2Enabled) {
+                clip(alpha - _SubCutoff2);
             }
         // sub texture 3, [(0.5, 0.5), (1, 1)]
         } else {
-            if (_SubTex3CutoffEnabled) {
-                clip(alpha - _SubTex3Cutoff);
+            if (_SubTex3Enabled && _SubCutoff3Enabled) {
+                clip(alpha - _SubCutoff3);
             }
         }
     }
+}
+
+half3 CompactEmission(float2 uv)
+{
+    half3 emission = 0;
+    if (uv.y < 0.5) {
+        // sub texture 0, [(0, 0), (0.5, 0.5)]
+        if (uv.x < 0.5) {
+            if (_SubTex0Enabled && _SubEmission0Enabled) {
+                emission = tex2D(_EmissionMap, uv).rgb * _SubEmissionColor0.rgb;
+            }
+        // sub texture 1, [(0.5, 0), (1, 0.5)]
+        } else {
+            if (_SubTex1Enabled && _SubEmission1Enabled) {
+                emission = tex2D(_EmissionMap, uv).rgb * _SubEmissionColor1.rgb;
+            }
+        }
+    }
+    else {
+        // sub texture 2, [(0, 0.5), (0.5, 1)]
+        if (uv.x < 0.5) {
+            if (_SubTex2Enabled && _SubEmission2Enabled) {
+                emission = tex2D(_EmissionMap, uv).rgb * _SubEmissionColor2.rgb;
+            }
+        // sub texture 3, [(0.5, 0.5), (1, 1)]
+        } else {
+            if (_SubTex3Enabled && _SubEmission3Enabled) {
+                emission = tex2D(_EmissionMap, uv).rgb * _SubEmissionColor3.rgb;
+            }
+        }
+    }
+    return emission;
+}
+
+void MobileSurf(Input IN, inout SurfaceOutput o) {
+    fixed4 c;
+#ifdef _NORMALMAP
+    float4 uvs = CompactBumpedUVs(IN.uv_MainTex);
+    float2 uv = uvs.xy;
+#else
+    float2 uv = CompactUV(IN.uv_MainTex);
+#endif
+
+    c = tex2D(_MainTex, uv);
+
+#ifdef _COMPACT_CUTOFF
+#   ifdef _COMPACT_TEXTURE
+    CompactClip(c.a, uv);
+#   else
+    clip(c.a - _Cutoff);
+#   endif
+#endif
+
+    o.Albedo = c.rgb;
+    o.Alpha = c.a;
+
+#ifdef _NORMALMAP
+    o.Normal = UnpackNormal(tex2D(_BumpMap, uvs.zw));
+#endif
+
+#ifdef _EMISSION
+#   ifdef _COMPACT_TEXTURE
+    o.Emission = CompactEmission(uv);
+#   else
+    o.Emission = tex2D(_EmissionMap, uv).rgb * _EmissionColor.rgb;
+#   endif
+#endif
 }
 
 #endif
