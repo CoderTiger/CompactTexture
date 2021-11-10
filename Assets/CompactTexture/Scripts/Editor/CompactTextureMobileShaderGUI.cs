@@ -39,11 +39,7 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
         public static class Styles
         {
             private static string subTexEnabledNameFormat = "Sub textuer {0}";
-            private static string subTexEnabledTipFormat =  "Sub region {0} {1} of the main texture." ;
-            private static string subTexNameFormat = "Sub texture {0}";
-            private static string subTexTipFormat = "Sub region {0} {1} of the main texture.";
-            private static string subCutoffEnabledNameFormat = "Sub textuer {0} cutoff";
-            private static string subCutoffEnabledTipFormat = "Cutoff on sub region {0} {1} of the main texture.";
+            private static string subTexEnabledTipFormat =  "Sub region {0} {1} of the main texture.";
 
             private static string[] uvRegions = {
                 "[(0,0),(0.5,0.5)]",
@@ -57,24 +53,6 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
                 GUIContent ret = EditorGUIUtility.TrTextContent(
                     string.Format(subTexEnabledNameFormat, index),
                     string.Format(subTexEnabledTipFormat, index, uvRegions[index])
-                    );
-                return ret;
-            }
-
-            public static GUIContent SubTex(int index)
-            {
-                GUIContent ret = EditorGUIUtility.TrTextContent(
-                    string.Format(subTexNameFormat, index),
-                    string.Format(subTexTipFormat, index, uvRegions[index])
-                    );
-                return ret;
-            }
-
-            public static GUIContent SubCutoffEnabled(int index)
-            {
-                GUIContent ret = EditorGUIUtility.TrTextContent(
-                    string.Format(subCutoffEnabledNameFormat, index),
-                    string.Format(subCutoffEnabledTipFormat, index, uvRegions[index])
                     );
                 return ret;
             }
