@@ -25,6 +25,8 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
         public static GUIContent alphaCutoutText = EditorGUIUtility.TrTextContent("Cutout", "Enable cutout?");
         public static GUIContent alphaCutoffText = EditorGUIUtility.TrTextContent("Alpha Cutoff", "Threshold for alpha cutoff");
         public static GUIContent normalMapText = EditorGUIUtility.TrTextContent("Normal Map", "Normal Map");
+        public static GUIContent specularMapText = EditorGUIUtility.TrTextContent("Specular Map", "Specular Map");
+        public static GUIContent shininessText = EditorGUIUtility.TrTextContent("Specular Shininess", "Specular Shininess");
         public static GUIContent emissionMapText = EditorGUIUtility.TrTextContent("Emission Map", "Emission Map");
         public static GUIContent emissionColorText = EditorGUIUtility.TrTextContent("Color", "Emission (RGB)");
 
@@ -63,6 +65,8 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
         public MaterialProperty texDummy = null;
         public MaterialProperty normal = null;
         public MaterialProperty normalDummy = null;
+        public MaterialProperty specularEnabled = null;
+        public MaterialProperty shininess = null;
         public MaterialProperty cutoffEnabled = null;
         public MaterialProperty cutoff = null;
         public MaterialProperty emissionEnabled = null;
@@ -75,6 +79,8 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
             texDummy = FindProperty("_SubTexDummy" + index, props);
             normal = FindProperty("_SubNormal" + index, props);
             normalDummy = FindProperty("_SubNormalDummy" + index, props);
+            specularEnabled = FindProperty("_SubSpecular" + index + "Enabled", props, false);
+            shininess = FindProperty("_SubShininess" + index, props, false);
             cutoffEnabled = FindProperty("_SubCutoff" + index + "Enabled", props);
             cutoff = FindProperty("_SubCutoff" + index, props);
             emissionEnabled = FindProperty("_SubEmission" + index + "Enabled", props);
@@ -85,6 +91,8 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
     MaterialProperty textureType = null;
     MaterialProperty blendMode = null;
     MaterialProperty albedoMap = null;
+    MaterialProperty specularMap = null;
+    MaterialProperty shininess = null;
     MaterialProperty alphaCutoff = null;
     MaterialProperty bumpMap = null;
     MaterialProperty emissionColorForRendering = null;
@@ -103,6 +111,8 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
 
         blendMode = FindProperty("_Mode", props);
         albedoMap = FindProperty("_MainTex", props);
+        specularMap = FindProperty("_SpecularMap", props, false);
+        shininess = FindProperty("_Shininess", props, false);
         alphaCutoff = FindProperty("_Cutoff", props);
         bumpMap = FindProperty("_BumpMap", props);
         emissionColorForRendering = FindProperty("_EmissionColor", props);
@@ -223,18 +233,41 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
 
     void DoTexturesArea(Material material)
     {
+        bool isNotCompact = (TextureType)textureType.floatValue != TextureType.Compact;
+        BlendMode mode = (BlendMode)material.GetFloat("_Mode");
+
         m_MaterialEditor.TextureProperty(albedoMap, Styles.albedoText.text, false);
         m_MaterialEditor.TextureProperty(bumpMap, Styles.normalMapText.text, false);
+        if (specularMap != null)
+        {
+            m_MaterialEditor.TextureProperty(specularMap, Styles.specularMapText.text, false);
+        }
+
+        if (isNotCompact)
+        {
+            m_MaterialEditor.ShaderProperty(shininess, Styles.shininessText.text, MaterialEditor.kMiniTextureFieldLabelIndentLevel + 1);
+            if (mode == BlendMode.Cutout)
+            {
+                m_MaterialEditor.ShaderProperty(alphaCutoff, Styles.alphaCutoffText.text, MaterialEditor.kMiniTextureFieldLabelIndentLevel + 1);
+            }
+        }
+
         m_EmissionEnabled = m_MaterialEditor.EmissionEnabledProperty();
         // change the GI flag and fix it up with emissive as black if necessary
         if (m_EmissionEnabled)
         {
-            if ((TextureType)textureType.floatValue != TextureType.Compact)
+            if (isNotCompact)
             {
                 emissionColorForRendering.colorValue = EditorGUILayout.ColorField(Styles.emissionColorText, emissionColorForRendering.colorValue, true, false, true);
             }
             m_HadEmissionTexture = emissionMap.textureValue != null;
             m_MaterialEditor.TextureProperty(emissionMap, Styles.emissionMapText.text);
+
+            // If texture was assigned and color was black set color to white
+            float brightness = emissionColorForRendering.colorValue.maxColorComponent;
+            if (emissionMap.textureValue != null && !m_HadEmissionTexture && brightness <= 0f)
+                emissionColorForRendering.colorValue = Color.white;
+
             m_MaterialEditor.LightmapEmissionFlagsProperty(MaterialEditor.kMiniTextureFieldLabelIndentLevel, true);
         }
     }
@@ -248,11 +281,18 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
         {
             for (int i = 0; i < subProperties.Length; i++)
             {
+                EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+                var origFontStyle = EditorStyles.label.fontStyle;
+                int origFontSize = EditorStyles.label.fontSize;
+                EditorStyles.label.fontStyle = FontStyle.Bold;
+                EditorStyles.label.fontSize = (int)(1.2 * origFontSize);
                 bool enabled = EditorGUILayout.Toggle(SubProperties.Styles.SubTexEnabled(i), subProperties[i].texEnabled.floatValue > 0);
+                EditorStyles.label.fontSize = origFontSize;
+                EditorStyles.label.fontStyle = origFontStyle;
                 subProperties[i].texEnabled.floatValue = enabled ? 1 : 0;
                 if (enabled)
                 {
-                    GUILayout.Label("Albedo");
+                    GUILayout.Label("Albedo:");
                     EditorGUILayout.BeginVertical("Albedo");
                     m_MaterialEditor.TextureScaleOffsetProperty(subProperties[i].texDummy);
                     subProperties[i].tex.vectorValue = subProperties[i].texDummy.textureScaleAndOffset;
@@ -260,14 +300,33 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
 
                     if (hasNormal)
                     {
-                        GUILayout.Label("Normal Map");
+                        GUILayout.Label("Normal Map:");
                         EditorGUILayout.BeginVertical("Normal Map");
                         m_MaterialEditor.TextureScaleOffsetProperty(subProperties[i].normalDummy);
                         subProperties[i].normal.vectorValue = subProperties[i].normalDummy.textureScaleAndOffset;
                         EditorGUILayout.EndVertical();
                     }
 
-                    EditorGUILayout.BeginVertical("Others");
+                    if (shininess != null)
+                    {
+                        bool subSpecularEnabled = EditorGUILayout.Toggle(Styles.specularMapText, subProperties[i].specularEnabled.floatValue > 0);
+                        subProperties[i].specularEnabled.floatValue = subSpecularEnabled ? 1 : 0;
+                        if (subSpecularEnabled)
+                        {
+                            m_MaterialEditor.ShaderProperty(subProperties[i].shininess, Styles.shininessText.text, MaterialEditor.kMiniTextureFieldLabelIndentLevel + 1);
+                        }
+                    }
+
+                    if (mode == BlendMode.Cutout)
+                    {
+                        bool cutoffEnabled = EditorGUILayout.Toggle(Styles.alphaCutoutText, subProperties[i].cutoffEnabled.floatValue > 0);
+                        subProperties[i].cutoffEnabled.floatValue = cutoffEnabled ? 1 : 0;
+                        if (cutoffEnabled)
+                        {
+                            m_MaterialEditor.ShaderProperty(subProperties[i].cutoff, Styles.alphaCutoffText.text, MaterialEditor.kMiniTextureFieldLabelIndentLevel + 1);
+                        }
+                    }
+
                     if (m_EmissionEnabled)
                     {
                         bool subEmissionEnabled = EditorGUILayout.Toggle(Styles.emissionMapText, subProperties[i].emissionEnabled.floatValue > 0);
@@ -288,36 +347,10 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
                                 subProperties[i].emissionColorForRendering.colorValue = Color.white;
                         }
                     }
-
-                    if (mode == BlendMode.Cutout)
-                    {
-                        //EditorGUILayout.BeginVertical(Styles.alphaCutoffText.text);
-                        bool cutoffEnabled = EditorGUILayout.Toggle(Styles.alphaCutoutText, subProperties[i].cutoffEnabled.floatValue > 0);
-                        subProperties[i].cutoffEnabled.floatValue = cutoffEnabled ? 1 : 0;
-                        if (cutoffEnabled)
-                        {
-                            m_MaterialEditor.ShaderProperty(subProperties[i].cutoff, Styles.alphaCutoffText.text, MaterialEditor.kMiniTextureFieldLabelIndentLevel + 1);
-                        }
-                        //EditorGUILayout.EndVertical();
-                    }
-                    EditorGUILayout.EndVertical();
                 }
                 EditorGUILayout.Space();
             }
-        }
-        else
-        {
-            if (m_EmissionEnabled)
-            {
-                // If texture was assigned and color was black set color to white
-                float brightness = emissionColorForRendering.colorValue.maxColorComponent;
-                if (emissionMap.textureValue != null && !m_HadEmissionTexture && brightness <= 0f)
-                    emissionColorForRendering.colorValue = Color.white;
-            }
-            if (mode == BlendMode.Cutout)
-            {
-                m_MaterialEditor.ShaderProperty(alphaCutoff, Styles.alphaCutoffText.text, MaterialEditor.kMiniTextureFieldLabelIndentLevel + 1);
-            }
+            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
         }
     }
 
@@ -327,18 +360,12 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
         {
             case BlendMode.Opaque:
                 material.SetOverrideTag("RenderType", "");
-                material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
-                material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
-                material.SetInt("_ZWrite", 1);
-                SetKeyword(material, "_COMPACT_CUTOFF", false);
+                SetKeyword(material, "_CUTOFF", false);
                 material.renderQueue = -1;
                 break;
             case BlendMode.Cutout:
                 material.SetOverrideTag("RenderType", "TransparentCutout");
-                material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
-                material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
-                material.SetInt("_ZWrite", 1);
-                SetKeyword(material, "_COMPACT_CUTOFF", true);
+                SetKeyword(material, "_CUTOFF", true);
                 material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.AlphaTest;
                 break;
         }
@@ -358,6 +385,11 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
         // Note: keywords must be based on Material value not on MaterialProperty due to multi-edit & material animation
         // (MaterialProperty value might come from renderer material property block)
         SetKeyword(material, "_NORMALMAP", material.GetTexture("_BumpMap"));
+
+        if (material.HasProperty("_SpecularMap"))
+        {
+            SetKeyword(material, "_SPECULARMAP", material.GetTexture("_SpecularMap"));
+        }
 
         // A material's GI flag internally keeps track of whether emission is enabled at all, it's enabled but has no effect
         // or is enabled and may be modified at runtime. This state depends on the values of the current flag and emissive color.

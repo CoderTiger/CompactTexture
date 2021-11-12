@@ -42,13 +42,29 @@ half4 _SubEmissionColor1;
 half4 _SubEmissionColor2;
 half4 _SubEmissionColor3;
 
+half _Shininess;
+sampler2D _SpecularMap;
+bool _SubSpecular0Enabled;
+bool _SubSpecular1Enabled;
+bool _SubSpecular2Enabled;
+bool _SubSpecular3Enabled;
+half _SubShininess0;
+half _SubShininess1;
+half _SubShininess2;
+half _SubShininess3;
+
 fixed _SeamCleaner;
 
 struct Input {
-            float2 uv_MainTex;
-        };
+    float2 uv_MainTex;
+};
 
-float2 CompactUV(float2 uv) {
+struct MobileSurfResult {
+    fixed4 color;
+    float2 uv;
+};
+
+inline float2 CompactUV(float2 uv) {
     float2 compactUV = uv;
     float subUVOffset = (0.5 - 0.5 * _SeamCleaner) / 2;
     if (uv.y < 0.5) {
@@ -103,7 +119,7 @@ float2 CompactUV(float2 uv) {
     return compactUV;
 }
 
-float4 CompactBumpedUVs(float2 uv) {
+inline float4 CompactBumpedUVs(float2 uv) {
     float2 compactUV = uv;
     float2 compactNormalUV = uv;
     fixed subUVOffset = (0.5 - 0.5 * _SeamCleaner) / 2;
@@ -190,7 +206,7 @@ float4 CompactBumpedUVs(float2 uv) {
     return float4(compactUV.x, compactUV.y, compactNormalUV.x, compactNormalUV.y);
 }
 
-void CompactClip(fixed alpha, float2 uv) {
+inline void CompactClip(fixed alpha, float2 uv) {
     if (uv.y < 0.5) {
         // sub texture 0, [(0, 0), (0.5, 0.5)]
         if (uv.x < 0.5) {
@@ -219,7 +235,7 @@ void CompactClip(fixed alpha, float2 uv) {
     }
 }
 
-half3 CompactEmission(float2 uv)
+inline half3 CompactEmission(float2 uv)
 {
     half3 emission = 0;
     if (uv.y < 0.5) {
@@ -251,7 +267,19 @@ half3 CompactEmission(float2 uv)
     return emission;
 }
 
-void MobileSurf(Input IN, inout SurfaceOutput o) {
+inline fixed4 LightingMobileBlinnPhong(SurfaceOutput s, fixed3 lightDir, fixed3 halfDir, fixed atten)
+{
+    fixed diff = max(0, dot (s.Normal, lightDir));
+    fixed nh = max(0, dot (s.Normal, halfDir));
+    fixed spec = pow(nh, s.Specular * 128) * s.Gloss;
+
+    fixed4 c;
+    c.rgb = (s.Albedo * _LightColor0.rgb * diff + _LightColor0.rgb * spec) * atten;
+    UNITY_OPAQUE_ALPHA(c.a);
+    return c;
+}
+
+float2 MobileSurf(Input IN, inout SurfaceOutput o) {
     fixed4 c;
 #ifdef _NORMALMAP
     float4 uvs = CompactBumpedUVs(IN.uv_MainTex);
@@ -262,7 +290,7 @@ void MobileSurf(Input IN, inout SurfaceOutput o) {
 
     c = tex2D(_MainTex, uv);
 
-#ifdef _COMPACT_CUTOFF
+#ifdef _CUTOFF
 #   ifdef _COMPACT_TEXTURE
     CompactClip(c.a, uv);
 #   else
@@ -284,6 +312,75 @@ void MobileSurf(Input IN, inout SurfaceOutput o) {
     o.Emission = tex2D(_EmissionMap, uv).rgb * _EmissionColor.rgb;
 #   endif
 #endif
+    return uv;
+}
+
+inline void CompactSpecularSetup(float2 uv, inout SurfaceOutput o) {
+    
+    if (uv.y < 0.5) {
+        // sub texture 0, [(0, 0), (0.5, 0.5)]
+        if (uv.x < 0.5) {
+            if (_SubTex0Enabled && _SubSpecular0Enabled) {
+                o.Gloss = o.Alpha;
+#ifdef _SPECULARMAP
+                o.Specular = tex2D(_SpecularMap, uv).r * _SubShininess0;
+#else
+                o.Specular = _SubShininess0;
+#endif
+            }
+        // sub texture 1, [(0.5, 0), (1, 0.5)]
+        } else {
+            if (_SubTex1Enabled && _SubSpecular1Enabled) {
+                o.Gloss = o.Alpha;
+#ifdef _SPECULARMAP
+                o.Specular = tex2D(_SpecularMap, uv).r * _SubShininess1;
+#else
+                o.Specular = _SubShininess1;
+#endif
+            }
+        }
+    }
+    else {
+        // sub texture 2, [(0, 0.5), (0.5, 1)]
+        if (uv.x < 0.5) {
+            if (_SubTex2Enabled && _SubSpecular2Enabled) {
+                o.Gloss = o.Alpha;
+#ifdef _SPECULARMAP
+                o.Specular = tex2D(_SpecularMap, uv).r * _SubShininess2;
+#else
+                o.Specular = _SubShininess2;
+#endif
+            }
+        // sub texture 3, [(0.5, 0.5), (1, 1)]
+        } else {
+            if (_SubTex3Enabled && _SubSpecular3Enabled) {
+                o.Gloss = o.Alpha;
+#ifdef _SPECULARMAP
+                o.Specular = tex2D(_SpecularMap, uv).r * _SubShininess3;
+#else
+                o.Specular = _SubShininess3;
+#endif
+            }
+        }
+    }
+}
+
+inline void SpecularSetup(float2 uv, inout SurfaceOutput o) {
+#ifdef _COMPACT_TEXTURE
+    CompactSpecularSetup(uv, o);
+#else
+    o.Gloss = o.Alpha;
+#   ifdef _SPECULARMAP
+    o.Specular = tex2D(_SpecularMap, uv).r * _Shininess;
+#   else
+    o.Specular = _Shininess;
+#   endif
+#endif
+}
+
+void MobileSurfSpec(Input IN, inout SurfaceOutput o) {
+    float2 uv = MobileSurf(IN, o);
+    SpecularSetup(uv, o);
 }
 
 #endif

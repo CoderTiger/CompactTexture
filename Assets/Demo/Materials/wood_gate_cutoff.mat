@@ -8,13 +8,15 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: wood_gate_cutoff
-  m_Shader: {fileID: 4800000, guid: e84e00dad030849528cb9feef9f3bb63, type: 3}
-  m_ShaderKeywords: SUBTEX3_CUTOFF_ENABLE_ON SUBTEX3_ENABLE_ON
+  m_Shader: {fileID: 4800000, guid: 71010b4fbf18b4015bbc86114f978413, type: 3}
+  m_ShaderKeywords: SUBTEX3_CUTOFF_ENABLE_ON SUBTEX3_ENABLE_ON _COMPACT_CUTOFF _COMPACT_TEXTURE
+    _CUTOFF
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
+  m_CustomRenderQueue: 2450
+  stringTagMap:
+    RenderType: TransparentCutout
   disabledShaderPasses: []
   m_SavedProperties:
     serializedVersion: 3
@@ -55,6 +57,42 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _SpecularMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SubNormalDummy0:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SubNormalDummy1:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SubNormalDummy2:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SubNormalDummy3:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SubTexDummy0:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SubTexDummy1:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SubTexDummy2:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SubTexDummy3:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Floats:
     - _BumpScale: 1
     - _Cutoff: 0.5
@@ -64,13 +102,34 @@ Material:
     - _Glossiness: 0.5
     - _GlossyReflections: 1
     - _Metallic: 0
-    - _Mode: 0
+    - _Mode: 1
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _SeamCleaner: 0.996
+    - _Shininess: 0.078125
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
+    - _SubCutoff0: 0.5
+    - _SubCutoff0Enabled: 0
+    - _SubCutoff1: 0.5
+    - _SubCutoff1Enabled: 0
+    - _SubCutoff2: 0.5
+    - _SubCutoff2Enabled: 0
+    - _SubCutoff3: 0.118
+    - _SubCutoff3Enabled: 1
+    - _SubEmission0Enabled: 0
+    - _SubEmission1Enabled: 0
+    - _SubEmission2Enabled: 0
+    - _SubEmission3Enabled: 0
+    - _SubShininess0: 0.078125
+    - _SubShininess1: 0.078125
+    - _SubShininess2: 0.078125
+    - _SubShininess3: 0.078125
+    - _SubSpecular0Enabled: 0
+    - _SubSpecular1Enabled: 0
+    - _SubSpecular2Enabled: 0
+    - _SubSpecular3Enabled: 0
     - _SubTex0Cutoff: 0.5
     - _SubTex0CutoffEnabled: 0
     - _SubTex0Enabled: 0
@@ -83,12 +142,21 @@ Material:
     - _SubTex3Cutoff: 0.118
     - _SubTex3CutoffEnabled: 1
     - _SubTex3Enabled: 1
+    - _TextureType: 1
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _SubEmissionColor0: {r: 0, g: 0, b: 0, a: 1}
+    - _SubEmissionColor1: {r: 0, g: 0, b: 0, a: 1}
+    - _SubEmissionColor2: {r: 0, g: 0, b: 0, a: 1}
+    - _SubEmissionColor3: {r: 0, g: 0, b: 0, a: 1}
+    - _SubNormal0: {r: 1, g: 1, b: 0, a: 0}
+    - _SubNormal1: {r: 1, g: 1, b: 0, a: 0}
+    - _SubNormal2: {r: 1, g: 1, b: 0, a: 0}
+    - _SubNormal3: {r: 1, g: 1, b: 0, a: 0}
     - _SubTex0: {r: 1, g: 1, b: 0, a: 0}
     - _SubTex1: {r: 1, g: 1, b: 0, a: 0}
     - _SubTex2: {r: 1, g: 1, b: 0, a: 0}
-    - _SubTex3: {r: 2, g: 1, b: 0, a: 0}
+    - _SubTex3: {r: 1, g: 1, b: 0, a: 0}

@@ -1,13 +1,19 @@
-﻿Shader "CompactTexture/Mobile" {
+﻿Shader "CompactTexture/Mobile Specular" {
     Properties {
         [MainTexture][NoScaleOffset] _MainTex ("Base (RGB)", 2D) = "white" {}
         [Normal][NoScaleOffset] _BumpMap ("Normalmap", 2D) = "bump" {}
         [NoScaleOffset]_EmissionMap ("Emission Map", 2D) = "white" {}
+        [NoScaleOffset]_SpecularMap("Specular Shininess Map", 2D) = "white" {}
 
         [HideInInspector]_SubTex0Enabled("", Int) = 1
         [HideInInspector]_SubTex1Enabled("", Int) = 1
         [HideInInspector]_SubTex2Enabled("", Int) = 1
         [HideInInspector]_SubTex3Enabled("", Int) = 1
+
+        [HideInInspector]_SubSpecular0Enabled("", Int) = 0
+        [HideInInspector]_SubSpecular1Enabled("", Int) = 0
+        [HideInInspector]_SubSpecular2Enabled("", Int) = 0
+        [HideInInspector]_SubSpecular3Enabled("", Int) = 0
 
         [HideInInspector]_SubCutoff0Enabled("", Int) = 0
         [HideInInspector]_SubCutoff1Enabled("", Int) = 0
@@ -51,6 +57,12 @@
         [HideInInspector]_SubEmissionColor2("", Color) = (0,0,0)
         [HideInInspector]_SubEmissionColor3("", Color) = (0,0,0)
 
+        [HideInInspector]_Shininess("Shininess", Range (0.03, 1)) = 0.078125
+        [HideInInspector]_SubShininess0("", Range (0.03, 1)) = 0.078125
+        [HideInInspector]_SubShininess1("", Range (0.03, 1)) = 0.078125
+        [HideInInspector]_SubShininess2("", Range (0.03, 1)) = 0.078125
+        [HideInInspector]_SubShininess3("", Range (0.03, 1)) = 0.078125
+
         [HideInInspector]_TextureType("__textureType", Float) = 1.0
         // Blending state
         [HideInInspector]_Mode ("__mode", Float) = 0.0
@@ -60,13 +72,14 @@
         LOD 250
 
         CGPROGRAM
-        #pragma surface MobileSurf Lambert noforwardadd
+        #pragma surface MobileSurfSpec MobileBlinnPhong exclude_path:prepass nolightmap noforwardadd halfasview interpolateview
 
         #pragma shader_feature_local _NORMALMAP
         #pragma shader_feature _EMISSION
 
         #pragma shader_feature_local _COMPACT_TEXTURE
         #pragma shader_feature_local _CUTOFF
+        #pragma shader_feature_local _SPECULARMAP
 
         #include "CGIIncludes/CompactTextureCore.cginc"
 
