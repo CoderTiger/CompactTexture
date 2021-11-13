@@ -321,20 +321,22 @@ inline void CompactSpecularSetup(float2 uv, inout SurfaceOutput o) {
         // sub texture 0, [(0, 0), (0.5, 0.5)]
         if (uv.x < 0.5) {
             if (_SubTex0Enabled && _SubSpecular0Enabled) {
-                o.Gloss = o.Alpha;
 #ifdef _SPECULARMAP
-                o.Specular = tex2D(_SpecularMap, uv).r * _SubShininess0;
+                o.Gloss = tex2D(_SpecularMap, uv).r * o.Alpha;
+                o.Specular = _SubShininess0;
 #else
+                o.Gloss = o.Alpha;
                 o.Specular = _SubShininess0;
 #endif
             }
         // sub texture 1, [(0.5, 0), (1, 0.5)]
         } else {
             if (_SubTex1Enabled && _SubSpecular1Enabled) {
-                o.Gloss = o.Alpha;
 #ifdef _SPECULARMAP
-                o.Specular = tex2D(_SpecularMap, uv).r * _SubShininess1;
+                o.Gloss = tex2D(_SpecularMap, uv).r * o.Alpha;
+                o.Specular = _SubShininess1;
 #else
+                o.Gloss = o.Alpha;
                 o.Specular = _SubShininess1;
 #endif
             }
@@ -344,20 +346,22 @@ inline void CompactSpecularSetup(float2 uv, inout SurfaceOutput o) {
         // sub texture 2, [(0, 0.5), (0.5, 1)]
         if (uv.x < 0.5) {
             if (_SubTex2Enabled && _SubSpecular2Enabled) {
-                o.Gloss = o.Alpha;
 #ifdef _SPECULARMAP
-                o.Specular = tex2D(_SpecularMap, uv).r * _SubShininess2;
+                o.Gloss = tex2D(_SpecularMap, uv).r * o.Alpha;
+                o.Specular = _SubShininess2;
 #else
+                o.Gloss = o.Alpha;
                 o.Specular = _SubShininess2;
 #endif
             }
         // sub texture 3, [(0.5, 0.5), (1, 1)]
         } else {
             if (_SubTex3Enabled && _SubSpecular3Enabled) {
-                o.Gloss = o.Alpha;
 #ifdef _SPECULARMAP
-                o.Specular = tex2D(_SpecularMap, uv).r * _SubShininess3;
+                o.Gloss = tex2D(_SpecularMap, uv).r * o.Alpha;
+                o.Specular = _SubShininess3;
 #else
+                o.Gloss = o.Alpha;
                 o.Specular = _SubShininess3;
 #endif
             }

@@ -45,11 +45,11 @@
 
         [HideInInspector]_SeamCleaner("Seam Cleaner", Range(0.5, 1)) = 0.996
 
-        [HideInInspector]_EmissionColor("Emission Color", Color) = (0,0,0)
-        [HideInInspector]_SubEmissionColor0("", Color) = (0,0,0)
-        [HideInInspector]_SubEmissionColor1("", Color) = (0,0,0)
-        [HideInInspector]_SubEmissionColor2("", Color) = (0,0,0)
-        [HideInInspector]_SubEmissionColor3("", Color) = (0,0,0)
+        [HideInInspector][HDR]_EmissionColor("Emission Color", Color) = (0,0,0)
+        [HideInInspector][HDR]_SubEmissionColor0("", Color) = (0,0,0)
+        [HideInInspector][HDR]_SubEmissionColor1("", Color) = (0,0,0)
+        [HideInInspector][HDR]_SubEmissionColor2("", Color) = (0,0,0)
+        [HideInInspector][HDR]_SubEmissionColor3("", Color) = (0,0,0)
 
         [HideInInspector]_TextureType("__textureType", Float) = 1.0
         // Blending state

@@ -245,7 +245,10 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
 
         if (isNotCompact)
         {
-            m_MaterialEditor.ShaderProperty(shininess, Styles.shininessText.text, MaterialEditor.kMiniTextureFieldLabelIndentLevel + 1);
+            if (shininess != null)
+            {
+                m_MaterialEditor.ShaderProperty(shininess, Styles.shininessText.text, MaterialEditor.kMiniTextureFieldLabelIndentLevel + 1);
+            }
             if (mode == BlendMode.Cutout)
             {
                 m_MaterialEditor.ShaderProperty(alphaCutoff, Styles.alphaCutoffText.text, MaterialEditor.kMiniTextureFieldLabelIndentLevel + 1);
@@ -258,7 +261,7 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
         {
             if (isNotCompact)
             {
-                emissionColorForRendering.colorValue = EditorGUILayout.ColorField(Styles.emissionColorText, emissionColorForRendering.colorValue, true, false, true);
+                m_MaterialEditor.ShaderProperty(emissionColorForRendering, Styles.emissionColorText, MaterialEditor.kMiniTextureFieldLabelIndentLevel + 1);
             }
             m_HadEmissionTexture = emissionMap.textureValue != null;
             m_MaterialEditor.TextureProperty(emissionMap, Styles.emissionMapText.text);
@@ -293,7 +296,7 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
                 if (enabled)
                 {
                     GUILayout.Label("Albedo:");
-                    EditorGUILayout.BeginVertical("Albedo");
+                    EditorGUILayout.BeginVertical();
                     m_MaterialEditor.TextureScaleOffsetProperty(subProperties[i].texDummy);
                     subProperties[i].tex.vectorValue = subProperties[i].texDummy.textureScaleAndOffset;
                     EditorGUILayout.EndVertical();
@@ -301,7 +304,7 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
                     if (hasNormal)
                     {
                         GUILayout.Label("Normal Map:");
-                        EditorGUILayout.BeginVertical("Normal Map");
+                        EditorGUILayout.BeginVertical();
                         m_MaterialEditor.TextureScaleOffsetProperty(subProperties[i].normalDummy);
                         subProperties[i].normal.vectorValue = subProperties[i].normalDummy.textureScaleAndOffset;
                         EditorGUILayout.EndVertical();
@@ -333,13 +336,7 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
                         subProperties[i].emissionEnabled.floatValue = subEmissionEnabled ? 1 : 0;
                         if (subEmissionEnabled)
                         {
-                            subProperties[i].emissionColorForRendering.colorValue = EditorGUILayout.ColorField(
-                                Styles.emissionColorText,
-                                subProperties[i].emissionColorForRendering.colorValue,
-                                true,
-                                false,
-                                true
-                                );
+                            m_MaterialEditor.ShaderProperty(subProperties[i].emissionColorForRendering, Styles.emissionColorText, MaterialEditor.kMiniTextureFieldLabelIndentLevel + 1);
 
                             // If texture was assigned and color was black set color to white
                             float brightness = subProperties[i].emissionColorForRendering.colorValue.maxColorComponent;

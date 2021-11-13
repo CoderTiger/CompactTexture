@@ -1,6 +1,6 @@
 ﻿Shader "CompactTexture/Mobile Specular" {
     Properties {
-        [MainTexture][NoScaleOffset] _MainTex ("Base (RGB)", 2D) = "white" {}
+        [MainTexture][NoScaleOffset] _MainTex ("Base (RGB) Gloss (A)", 2D) = "white" {}
         [Normal][NoScaleOffset] _BumpMap ("Normalmap", 2D) = "bump" {}
         [NoScaleOffset]_EmissionMap ("Emission Map", 2D) = "white" {}
         [NoScaleOffset]_SpecularMap("Specular Shininess Map", 2D) = "white" {}
@@ -51,11 +51,11 @@
 
         [HideInInspector]_SeamCleaner("Seam Cleaner", Range(0.5, 1)) = 0.996
 
-        [HideInInspector]_EmissionColor("Emission Color", Color) = (0,0,0)
-        [HideInInspector]_SubEmissionColor0("", Color) = (0,0,0)
-        [HideInInspector]_SubEmissionColor1("", Color) = (0,0,0)
-        [HideInInspector]_SubEmissionColor2("", Color) = (0,0,0)
-        [HideInInspector]_SubEmissionColor3("", Color) = (0,0,0)
+        [HideInInspector][HDR]_EmissionColor("Emission Color", Color) = (0,0,0)
+        [HideInInspector][HDR]_SubEmissionColor0("", Color) = (0,0,0)
+        [HideInInspector][HDR]_SubEmissionColor1("", Color) = (0,0,0)
+        [HideInInspector][HDR]_SubEmissionColor2("", Color) = (0,0,0)
+        [HideInInspector][HDR]_SubEmissionColor3("", Color) = (0,0,0)
 
         [HideInInspector]_Shininess("Shininess", Range (0.03, 1)) = 0.078125
         [HideInInspector]_SubShininess0("", Range (0.03, 1)) = 0.078125
