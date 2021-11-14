@@ -122,6 +122,10 @@ Material:
     - _SubEmission1Enabled: 0
     - _SubEmission2Enabled: 0
     - _SubEmission3Enabled: 0
+    - _SubSeamCleaner0: 0.996
+    - _SubSeamCleaner1: 0.996
+    - _SubSeamCleaner2: 0.996
+    - _SubSeamCleaner3: 0.996
     - _SubShininess0: 0.078125
     - _SubShininess1: 0.078125
     - _SubShininess2: 0.078125
