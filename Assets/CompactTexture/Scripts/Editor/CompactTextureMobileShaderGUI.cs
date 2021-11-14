@@ -30,6 +30,8 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
         public static GUIContent emissionMapText = EditorGUIUtility.TrTextContent("Emission Map", "Emission Map");
         public static GUIContent emissionColorText = EditorGUIUtility.TrTextContent("Color", "Emission (RGB)");
 
+        public static GUIContent seamCleanerText = EditorGUIUtility.TrTextContent("Seam Cleaner", "Seam Cleaner");
+
         public static string forwardText = "Forward Rendering Options";
         public static string renderingMode = "Rendering Mode";
         public static string advancedText = "Advanced Options";
@@ -61,6 +63,7 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
         }
 
         public MaterialProperty texEnabled = null;
+        public MaterialProperty seamCleaner = null;
         public MaterialProperty tex = null;
         public MaterialProperty texDummy = null;
         public MaterialProperty normal = null;
@@ -75,6 +78,7 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
         public void FindeProperties(int index, MaterialProperty[] props)
         {
             texEnabled = FindProperty("_SubTex" + index + "Enabled", props);
+            seamCleaner = FindProperty("_SubSeamCleaner" + index, props);
             tex = FindProperty("_SubTex" + index, props);
             texDummy = FindProperty("_SubTexDummy" + index, props);
             normal = FindProperty("_SubNormal" + index, props);
@@ -247,11 +251,11 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
         {
             if (shininess != null)
             {
-                m_MaterialEditor.ShaderProperty(shininess, Styles.shininessText.text, MaterialEditor.kMiniTextureFieldLabelIndentLevel + 1);
+                m_MaterialEditor.ShaderProperty(shininess, Styles.shininessText.text, MaterialEditor.kMiniTextureFieldLabelIndentLevel);
             }
             if (mode == BlendMode.Cutout)
             {
-                m_MaterialEditor.ShaderProperty(alphaCutoff, Styles.alphaCutoffText.text, MaterialEditor.kMiniTextureFieldLabelIndentLevel + 1);
+                m_MaterialEditor.ShaderProperty(alphaCutoff, Styles.alphaCutoffText.text, MaterialEditor.kMiniTextureFieldLabelIndentLevel);
             }
         }
 
@@ -261,7 +265,8 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
         {
             if (isNotCompact)
             {
-                m_MaterialEditor.ShaderProperty(emissionColorForRendering, Styles.emissionColorText, MaterialEditor.kMiniTextureFieldLabelIndentLevel + 1);
+                m_MaterialEditor.ShaderProperty(emissionColorForRendering, Styles.emissionColorText, MaterialEditor.kMiniTextureFieldLabelIndentLevel);
+                //emissionColorForRendering.colorValue = EditorGUILayout.ColorField(Styles.emissionColorText, emissionColorForRendering.colorValue, true, false, true);
             }
             m_HadEmissionTexture = emissionMap.textureValue != null;
             m_MaterialEditor.TextureProperty(emissionMap, Styles.emissionMapText.text);
@@ -295,6 +300,7 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
                 subProperties[i].texEnabled.floatValue = enabled ? 1 : 0;
                 if (enabled)
                 {
+                    m_MaterialEditor.ShaderProperty(subProperties[i].seamCleaner, Styles.seamCleanerText, MaterialEditor.kMiniTextureFieldLabelIndentLevel);
                     GUILayout.Label("Albedo:");
                     EditorGUILayout.BeginVertical();
                     m_MaterialEditor.TextureScaleOffsetProperty(subProperties[i].texDummy);
@@ -316,7 +322,7 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
                         subProperties[i].specularEnabled.floatValue = subSpecularEnabled ? 1 : 0;
                         if (subSpecularEnabled)
                         {
-                            m_MaterialEditor.ShaderProperty(subProperties[i].shininess, Styles.shininessText.text, MaterialEditor.kMiniTextureFieldLabelIndentLevel + 1);
+                            m_MaterialEditor.ShaderProperty(subProperties[i].shininess, Styles.shininessText.text, MaterialEditor.kMiniTextureFieldLabelIndentLevel);
                         }
                     }
 
@@ -326,7 +332,7 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
                         subProperties[i].cutoffEnabled.floatValue = cutoffEnabled ? 1 : 0;
                         if (cutoffEnabled)
                         {
-                            m_MaterialEditor.ShaderProperty(subProperties[i].cutoff, Styles.alphaCutoffText.text, MaterialEditor.kMiniTextureFieldLabelIndentLevel + 1);
+                            m_MaterialEditor.ShaderProperty(subProperties[i].cutoff, Styles.alphaCutoffText.text, MaterialEditor.kMiniTextureFieldLabelIndentLevel);
                         }
                     }
 
@@ -336,7 +342,14 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
                         subProperties[i].emissionEnabled.floatValue = subEmissionEnabled ? 1 : 0;
                         if (subEmissionEnabled)
                         {
-                            m_MaterialEditor.ShaderProperty(subProperties[i].emissionColorForRendering, Styles.emissionColorText, MaterialEditor.kMiniTextureFieldLabelIndentLevel + 1);
+                            m_MaterialEditor.ShaderProperty(subProperties[i].emissionColorForRendering, Styles.emissionColorText, MaterialEditor.kMiniTextureFieldLabelIndentLevel);
+                            //subProperties[i].emissionColorForRendering.colorValue = EditorGUILayout.ColorField(
+                            //    Styles.emissionColorText,
+                            //    subProperties[i].emissionColorForRendering.colorValue,
+                            //    true,
+                            //    false,
+                            //    true
+                            //    );
 
                             // If texture was assigned and color was black set color to white
                             float brightness = subProperties[i].emissionColorForRendering.colorValue.maxColorComponent;

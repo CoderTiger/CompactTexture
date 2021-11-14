@@ -49,7 +49,10 @@
         [HideInInspector]_SubCutoff2("Alpha Cutoff", Range(0, 1)) = 0.5
         [HideInInspector]_SubCutoff3("Alpha Cutoff", Range(0, 1)) = 0.5
 
-        [HideInInspector]_SeamCleaner("Seam Cleaner", Range(0.5, 1)) = 0.996
+        [HideInInspector]_SubSeamCleaner0("Seam Cleaner", Range(0.5, 1)) = 0.996
+        [HideInInspector]_SubSeamCleaner1("Seam Cleaner", Range(0.5, 1)) = 0.996
+        [HideInInspector]_SubSeamCleaner2("Seam Cleaner", Range(0.5, 1)) = 0.996
+        [HideInInspector]_SubSeamCleaner3("Seam Cleaner", Range(0.5, 1)) = 0.996
 
         [HideInInspector][HDR]_EmissionColor("Emission Color", Color) = (0,0,0)
         [HideInInspector][HDR]_SubEmissionColor0("", Color) = (0,0,0)
