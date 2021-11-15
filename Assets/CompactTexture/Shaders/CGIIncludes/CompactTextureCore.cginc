@@ -53,10 +53,10 @@ half _SubShininess1;
 half _SubShininess2;
 half _SubShininess3;
 
-fixed _SubSeamCleaner0;
-fixed _SubSeamCleaner1;
-fixed _SubSeamCleaner2;
-fixed _SubSeamCleaner3;
+fixed4 _SubPadding0;
+fixed4 _SubPadding1;
+fixed4 _SubPadding2;
+fixed4 _SubPadding3;
 
 struct Input {
     float2 uv_MainTex;
@@ -73,27 +73,23 @@ inline float2 CompactUV(float2 uv) {
         // sub texture 0, [(0, 0), (0.5, 0.5)]
         if (uv.x < 0.5) {
             if (_SubTex0Enabled) {
-                float subUVOffset = (0.5 - 0.5 * _SubSeamCleaner0) / 2;
-
+                float2 subUVSize = float2(0.5 - _SubPadding0.x - _SubPadding0.y, 0.5 - _SubPadding0.z - _SubPadding0.w);
                 compactUV += float2(_SubTex0.z, _SubTex0.w);
                 compactUV.x *= _SubTex0.x;
                 compactUV.y *= _SubTex0.y;
-                compactUV = fmod(compactUV, 0.5);
-                compactUV *= _SubSeamCleaner0;
-                compactUV += subUVOffset;
+                compactUV = fmod(compactUV, subUVSize);
+                compactUV += _SubPadding0.xw;
             }
         // sub texture 1, [(0.5, 0), (1, 0.5)]
         } else {
             if (_SubTex1Enabled) {
-                float subUVOffset = (0.5 - 0.5 * _SubSeamCleaner1) / 2;
-
+                float2 subUVSize = float2(0.5 - _SubPadding1.x - _SubPadding1.y, 0.5 - _SubPadding1.z - _SubPadding1.w);
                 compactUV += float2(_SubTex1.z - 0.5, _SubTex1.w);
                 compactUV.x *= _SubTex1.x;
                 compactUV.y *= _SubTex1.y;
-                compactUV = fmod(compactUV, 0.5);
-                compactUV *= _SubSeamCleaner1;
-                compactUV += subUVOffset;
+                compactUV = fmod(compactUV, subUVSize);
                 compactUV.x += 0.5;
+                compactUV += _SubPadding1.xw;
             }
         }
     }
@@ -101,28 +97,24 @@ inline float2 CompactUV(float2 uv) {
         // sub texture 2, [(0, 0.5), (0.5, 1)]
         if (uv.x < 0.5) {
             if (_SubTex2Enabled) {
-                float subUVOffset = (0.5 - 0.5 * _SubSeamCleaner2) / 2;
-
+                float2 subUVSize = float2(0.5 - _SubPadding2.x - _SubPadding2.y, 0.5 - _SubPadding2.z - _SubPadding2.w);
                 compactUV += float2(_SubTex2.z, _SubTex2.w - 0.5);
                 compactUV.x *= _SubTex2.x;
                 compactUV.y *= _SubTex2.y;
-                compactUV = fmod(compactUV, 0.5);
-                compactUV *= _SubSeamCleaner2;
-                compactUV += subUVOffset;
+                compactUV = fmod(compactUV, subUVSize);
                 compactUV.y += 0.5;
+                compactUV += _SubPadding2.xw;
             }
         // sub texture 3, [(0.5, 0.5), (1, 1)]
         } else {
             if (_SubTex3Enabled) {
-                float subUVOffset = (0.5 - 0.5 * _SubSeamCleaner3) / 2;
-
+                float2 subUVSize = float2(0.5 - _SubPadding3.x - _SubPadding3.y, 0.5 - _SubPadding3.z - _SubPadding3.w);
                 compactUV += float2(_SubTex3.z - 0.5, _SubTex3.w - 0.5);
                 compactUV.x *= _SubTex3.x;
                 compactUV.y *= _SubTex3.y;
-                compactUV = fmod(compactUV, 0.5);
-                compactUV *= _SubSeamCleaner3;
-                compactUV += subUVOffset;
+                compactUV = fmod(compactUV, subUVSize);
                 compactUV += 0.5;
+                compactUV += _SubPadding3.xw;
             }
         }
     }
@@ -136,42 +128,36 @@ inline float4 CompactBumpedUVs(float2 uv) {
         // sub texture 0, [(0, 0), (0.5, 0.5)]
         if (uv.x < 0.5) {
             if (_SubTex0Enabled) {
-                float subUVOffset = (0.5 - 0.5 * _SubSeamCleaner0) / 2;
-
+                float2 subUVSize = float2(0.5 - _SubPadding0.x - _SubPadding0.y, 0.5 - _SubPadding0.z - _SubPadding0.w);
                 compactUV += float2(_SubTex0.z, _SubTex0.w);
                 compactUV.x *= _SubTex0.x;
                 compactUV.y *= _SubTex0.y;
-                compactUV = fmod(compactUV, 0.5);
-                compactUV *= _SubSeamCleaner0;
-                compactUV += subUVOffset;
+                compactUV = fmod(compactUV, subUVSize);
+                compactUV += _SubPadding0.xw;
 
                 compactNormalUV += float2(_SubNormal0.z, _SubNormal0.w);
                 compactNormalUV.x *= _SubNormal0.x;
                 compactNormalUV.y *= _SubNormal0.y;
-                compactNormalUV = fmod(compactNormalUV, 0.5);
-                compactNormalUV *= _SubSeamCleaner0;
-                compactNormalUV += subUVOffset;
+                compactNormalUV = fmod(compactNormalUV, subUVSize);
+                compactNormalUV += _SubPadding0.xw;
             }
         // sub texture 1, [(0.5, 0), (1, 0.5)]
         } else {
             if (_SubTex1Enabled) {
-                float subUVOffset = (0.5 - 0.5 * _SubSeamCleaner1) / 2;
-
+                float2 subUVSize = float2(0.5 - _SubPadding1.x - _SubPadding1.y, 0.5 - _SubPadding1.z - _SubPadding1.w);
                 compactUV += float2(_SubTex1.z - 0.5, _SubTex1.w);
                 compactUV.x *= _SubTex1.x;
                 compactUV.y *= _SubTex1.y;
-                compactUV = fmod(compactUV, 0.5);
-                compactUV *= _SubSeamCleaner1;
-                compactUV += subUVOffset;
+                compactUV = fmod(compactUV, subUVSize);
                 compactUV.x += 0.5;
+                compactUV += _SubPadding1.xw;
 
                 compactNormalUV += float2(_SubNormal1.z - 0.5, _SubNormal1.w);
                 compactNormalUV.x *= _SubNormal1.x;
                 compactNormalUV.y *= _SubNormal1.y;
-                compactNormalUV = fmod(compactNormalUV, 0.5);
-                compactNormalUV *= _SubSeamCleaner1;
-                compactNormalUV += subUVOffset;
+                compactNormalUV = fmod(compactNormalUV, subUVSize);
                 compactNormalUV.x += 0.5;
+                compactNormalUV += _SubPadding1.xw;
             }
         }
     }
@@ -179,44 +165,38 @@ inline float4 CompactBumpedUVs(float2 uv) {
         // sub texture 2, [(0, 0.5), (0.5, 1)]
         if (uv.x < 0.5) {
             if (_SubTex2Enabled) {
-                float subUVOffset = (0.5 - 0.5 * _SubSeamCleaner2) / 2;
-
+                float2 subUVSize = float2(0.5 - _SubPadding2.x - _SubPadding2.y, 0.5 - _SubPadding2.z - _SubPadding2.w);
                 compactUV += float2(_SubTex2.z, _SubTex2.w - 0.5);
                 compactUV.x *= _SubTex2.x;
                 compactUV.y *= _SubTex2.y;
-                compactUV = fmod(compactUV, 0.5);
-                compactUV *= _SubSeamCleaner2;
-                compactUV += subUVOffset;
+                compactUV = fmod(compactUV, subUVSize);
                 compactUV.y += 0.5;
+                compactUV += _SubPadding2.xw;
 
                 compactNormalUV += float2(_SubNormal2.z, _SubNormal2.w - 0.5);
                 compactNormalUV.x *= _SubNormal2.x;
                 compactNormalUV.y *= _SubNormal2.y;
-                compactNormalUV = fmod(compactNormalUV, 0.5);
-                compactNormalUV *= _SubSeamCleaner2;
-                compactNormalUV += subUVOffset;
+                compactNormalUV = fmod(compactNormalUV, subUVSize);
                 compactNormalUV.y += 0.5;
+                compactNormalUV += _SubPadding2.xw;
             }
         // sub texture 3, [(0.5, 0.5), (1, 1)]
         } else {
             if (_SubTex3Enabled) {
-                float subUVOffset = (0.5 - 0.5 * _SubSeamCleaner3) / 2;
-
+                float2 subUVSize = float2(0.5 - _SubPadding3.x - _SubPadding3.y, 0.5 - _SubPadding3.z - _SubPadding3.w);
                 compactUV += float2(_SubTex3.z - 0.5, _SubTex3.w - 0.5);
                 compactUV.x *= _SubTex3.x;
                 compactUV.y *= _SubTex3.y;
-                compactUV = fmod(compactUV, 0.5);
-                compactUV *= _SubSeamCleaner3;
-                compactUV += subUVOffset;
+                compactUV = fmod(compactUV, subUVSize);
                 compactUV += 0.5;
+                compactUV += _SubPadding3.xw;
 
                 compactNormalUV += float2(_SubNormal3.z - 0.5, _SubNormal3.w - 0.5);
                 compactNormalUV.x *= _SubNormal3.x;
                 compactNormalUV.y *= _SubNormal3.y;
-                compactNormalUV = fmod(compactNormalUV, 0.5);
-                compactNormalUV *= _SubSeamCleaner3;
-                compactNormalUV += subUVOffset;
+                compactNormalUV = fmod(compactNormalUV, subUVSize);
                 compactNormalUV += 0.5;
+                compactNormalUV += _SubPadding3.xw;
             }
         }
     }

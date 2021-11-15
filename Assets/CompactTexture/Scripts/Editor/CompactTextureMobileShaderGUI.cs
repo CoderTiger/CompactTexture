@@ -26,11 +26,11 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
         public static GUIContent alphaCutoffText = EditorGUIUtility.TrTextContent("Alpha Cutoff", "Threshold for alpha cutoff");
         public static GUIContent normalMapText = EditorGUIUtility.TrTextContent("Normal Map", "Normal Map");
         public static GUIContent specularMapText = EditorGUIUtility.TrTextContent("Specular Map", "Specular Map");
-        public static GUIContent shininessText = EditorGUIUtility.TrTextContent("Specular Shininess", "Specular Shininess");
+        public static GUIContent shininessText = EditorGUIUtility.TrTextContent("Shininess", "Specular Shininess");
         public static GUIContent emissionMapText = EditorGUIUtility.TrTextContent("Emission Map", "Emission Map");
         public static GUIContent emissionColorText = EditorGUIUtility.TrTextContent("Color", "Emission (RGB)");
 
-        public static GUIContent seamCleanerText = EditorGUIUtility.TrTextContent("Seam Cleaner", "Seam Cleaner");
+        public static GUIContent paddingText = EditorGUIUtility.TrTextContent("Padding", "Padding Space (used to erasing seams)");
 
         public static string forwardText = "Forward Rendering Options";
         public static string renderingMode = "Rendering Mode";
@@ -63,11 +63,9 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
         }
 
         public MaterialProperty texEnabled = null;
-        public MaterialProperty seamCleaner = null;
+        public MaterialProperty padding = null;
         public MaterialProperty tex = null;
-        public MaterialProperty texDummy = null;
         public MaterialProperty normal = null;
-        public MaterialProperty normalDummy = null;
         public MaterialProperty specularEnabled = null;
         public MaterialProperty shininess = null;
         public MaterialProperty cutoffEnabled = null;
@@ -78,11 +76,9 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
         public void FindeProperties(int index, MaterialProperty[] props)
         {
             texEnabled = FindProperty("_SubTex" + index + "Enabled", props);
-            seamCleaner = FindProperty("_SubSeamCleaner" + index, props);
+            padding = FindProperty("_SubPadding" + index, props);
             tex = FindProperty("_SubTex" + index, props);
-            texDummy = FindProperty("_SubTexDummy" + index, props);
             normal = FindProperty("_SubNormal" + index, props);
-            normalDummy = FindProperty("_SubNormalDummy" + index, props);
             specularEnabled = FindProperty("_SubSpecular" + index + "Enabled", props, false);
             shininess = FindProperty("_SubShininess" + index, props, false);
             cutoffEnabled = FindProperty("_SubCutoff" + index + "Enabled", props);
@@ -251,11 +247,15 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
         {
             if (shininess != null)
             {
-                m_MaterialEditor.ShaderProperty(shininess, Styles.shininessText.text, MaterialEditor.kMiniTextureFieldLabelIndentLevel);
+                EditorGUI.indentLevel++;
+                m_MaterialEditor.ShaderProperty(shininess, Styles.shininessText.text);
+                EditorGUI.indentLevel--;
             }
             if (mode == BlendMode.Cutout)
             {
-                m_MaterialEditor.ShaderProperty(alphaCutoff, Styles.alphaCutoffText.text, MaterialEditor.kMiniTextureFieldLabelIndentLevel);
+                EditorGUI.indentLevel++;
+                m_MaterialEditor.ShaderProperty(alphaCutoff, Styles.alphaCutoffText.text);
+                EditorGUI.indentLevel--;
             }
         }
 
@@ -265,8 +265,10 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
         {
             if (isNotCompact)
             {
-                m_MaterialEditor.ShaderProperty(emissionColorForRendering, Styles.emissionColorText, MaterialEditor.kMiniTextureFieldLabelIndentLevel);
+                EditorGUI.indentLevel++;
+                m_MaterialEditor.ShaderProperty(emissionColorForRendering, Styles.emissionColorText);
                 //emissionColorForRendering.colorValue = EditorGUILayout.ColorField(Styles.emissionColorText, emissionColorForRendering.colorValue, true, false, true);
+                EditorGUI.indentLevel--;
             }
             m_HadEmissionTexture = emissionMap.textureValue != null;
             m_MaterialEditor.TextureProperty(emissionMap, Styles.emissionMapText.text);
@@ -276,8 +278,98 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
             if (emissionMap.textureValue != null && !m_HadEmissionTexture && brightness <= 0f)
                 emissionColorForRendering.colorValue = Color.white;
 
-            m_MaterialEditor.LightmapEmissionFlagsProperty(MaterialEditor.kMiniTextureFieldLabelIndentLevel, true);
+            m_MaterialEditor.LightmapEmissionFlagsProperty(EditorGUI.indentLevel + 1, true);
         }
+    }
+
+    static float GetFloatValueBetweenMinMax(float min, float max, float value)
+    {
+        if (value < min) return min;
+        if (value > max) return max;
+        return value;
+    }
+
+    static Vector4 GetVector4ValueBetweenMinMax(float min, float max, Vector4 value)
+    {
+        Vector4 ret = new Vector4(
+            GetFloatValueBetweenMinMax(min, max, value.x),
+            GetFloatValueBetweenMinMax(min, max, value.y),
+            GetFloatValueBetweenMinMax(min, max, value.z),
+            GetFloatValueBetweenMinMax(min, max, value.w)
+            );
+        return ret;
+    }
+
+    void DoPaddingArea(MaterialProperty paddingProp, int labelIndentLevel)
+    {
+        int origLabelIndentLevel = EditorGUI.indentLevel;
+        EditorGUI.indentLevel = labelIndentLevel;
+        EditorGUILayout.LabelField(Styles.paddingText);
+        EditorGUI.indentLevel++;
+
+        const float kMaxPaddingFloatFieldWidth = 30;
+        Vector4 paddingNameWidths = new Vector4(80, 80, 80, 80);// new Vector4(36, 42, 34, 57);
+        float origionalLableWidth = EditorGUIUtility.labelWidth;
+        EditorGUILayout.BeginHorizontal();
+        EditorGUIUtility.labelWidth = paddingNameWidths.x;
+        float left = EditorGUILayout.FloatField("left", paddingProp.vectorValue.x,
+            GUILayout.MaxWidth(kMaxPaddingFloatFieldWidth + paddingNameWidths.x), GUILayout.ExpandWidth(true));
+        EditorGUIUtility.labelWidth = paddingNameWidths.y;
+        float right = EditorGUILayout.FloatField("right", paddingProp.vectorValue.y,
+            GUILayout.MaxWidth(kMaxPaddingFloatFieldWidth + paddingNameWidths.y), GUILayout.ExpandWidth(true));
+        EditorGUILayout.EndHorizontal();
+        EditorGUILayout.BeginHorizontal();
+        EditorGUIUtility.labelWidth = paddingNameWidths.z;
+        float top = EditorGUILayout.FloatField("top", paddingProp.vectorValue.z,
+            GUILayout.MaxWidth(kMaxPaddingFloatFieldWidth + paddingNameWidths.z), GUILayout.ExpandWidth(true));
+        EditorGUIUtility.labelWidth = paddingNameWidths.w;
+        float bottom = EditorGUILayout.FloatField("bottom", paddingProp.vectorValue.w,
+            GUILayout.MaxWidth(kMaxPaddingFloatFieldWidth + paddingNameWidths.w), GUILayout.ExpandWidth(true));
+        paddingProp.vectorValue = GetVector4ValueBetweenMinMax(0, 0.2499f, new Vector4(left, right, top, bottom));
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUIUtility.labelWidth = origionalLableWidth;
+        EditorGUI.indentLevel--;
+        EditorGUI.indentLevel = origLabelIndentLevel;
+    }
+
+    void DoTextureScaleOffsetArea(GUIContent label, MaterialProperty scaleOffsetProp, int labelIndentLevel)
+    {
+        int origLabelIndentLevel = EditorGUI.indentLevel;
+        EditorGUI.indentLevel = labelIndentLevel;
+        EditorGUILayout.LabelField(label);
+        EditorGUI.indentLevel++;
+
+        const float kGroupNameWidth = 20;
+        const float kMaxFloatFieldValueWidth = 80;
+        const float kFloatFieldNameWidth = 30;
+        float origionalLableWidth = EditorGUIUtility.labelWidth;
+
+        EditorGUILayout.BeginHorizontal();
+        EditorGUIUtility.labelWidth = kGroupNameWidth;
+        EditorGUILayout.LabelField("Tiling");
+        EditorGUIUtility.labelWidth = kFloatFieldNameWidth;
+        float x = EditorGUILayout.FloatField("X", scaleOffsetProp.vectorValue.x,
+            GUILayout.MaxWidth(kMaxFloatFieldValueWidth + kFloatFieldNameWidth), GUILayout.ExpandWidth(true));
+        EditorGUIUtility.labelWidth = kFloatFieldNameWidth;
+        float y = EditorGUILayout.FloatField("Y", scaleOffsetProp.vectorValue.y,
+            GUILayout.MaxWidth(kMaxFloatFieldValueWidth + kFloatFieldNameWidth), GUILayout.ExpandWidth(true));
+        EditorGUILayout.EndHorizontal();
+        EditorGUILayout.BeginHorizontal();
+        EditorGUIUtility.labelWidth = kGroupNameWidth;
+        EditorGUILayout.LabelField("Offset");
+        EditorGUIUtility.labelWidth = kFloatFieldNameWidth;
+        float z = EditorGUILayout.FloatField("X", scaleOffsetProp.vectorValue.z,
+            GUILayout.MaxWidth(kMaxFloatFieldValueWidth + kFloatFieldNameWidth), GUILayout.ExpandWidth(true));
+        EditorGUIUtility.labelWidth = kFloatFieldNameWidth;
+        float w = EditorGUILayout.FloatField("Y", scaleOffsetProp.vectorValue.w,
+            GUILayout.MaxWidth(kMaxFloatFieldValueWidth + kFloatFieldNameWidth), GUILayout.ExpandWidth(true));
+        scaleOffsetProp.vectorValue = new Vector4(x, y, z, w);
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUIUtility.labelWidth = origionalLableWidth;
+        EditorGUI.indentLevel--;
+        EditorGUI.indentLevel = origLabelIndentLevel;
     }
 
     void DoSubtexturesArea(Material material)
@@ -300,20 +392,12 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
                 subProperties[i].texEnabled.floatValue = enabled ? 1 : 0;
                 if (enabled)
                 {
-                    m_MaterialEditor.ShaderProperty(subProperties[i].seamCleaner, Styles.seamCleanerText, MaterialEditor.kMiniTextureFieldLabelIndentLevel);
-                    GUILayout.Label("Albedo:");
-                    EditorGUILayout.BeginVertical();
-                    m_MaterialEditor.TextureScaleOffsetProperty(subProperties[i].texDummy);
-                    subProperties[i].tex.vectorValue = subProperties[i].texDummy.textureScaleAndOffset;
-                    EditorGUILayout.EndVertical();
+                    DoPaddingArea(subProperties[i].padding, EditorGUI.indentLevel);
 
+                    DoTextureScaleOffsetArea(Styles.albedoText, subProperties[i].tex, EditorGUI.indentLevel);
                     if (hasNormal)
                     {
-                        GUILayout.Label("Normal Map:");
-                        EditorGUILayout.BeginVertical();
-                        m_MaterialEditor.TextureScaleOffsetProperty(subProperties[i].normalDummy);
-                        subProperties[i].normal.vectorValue = subProperties[i].normalDummy.textureScaleAndOffset;
-                        EditorGUILayout.EndVertical();
+                        DoTextureScaleOffsetArea(Styles.normalMapText, subProperties[i].normal, EditorGUI.indentLevel);
                     }
 
                     if (shininess != null)
@@ -322,7 +406,9 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
                         subProperties[i].specularEnabled.floatValue = subSpecularEnabled ? 1 : 0;
                         if (subSpecularEnabled)
                         {
-                            m_MaterialEditor.ShaderProperty(subProperties[i].shininess, Styles.shininessText.text, MaterialEditor.kMiniTextureFieldLabelIndentLevel);
+                            EditorGUI.indentLevel++;
+                            m_MaterialEditor.ShaderProperty(subProperties[i].shininess, Styles.shininessText.text);
+                            EditorGUI.indentLevel--;
                         }
                     }
 
@@ -332,7 +418,9 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
                         subProperties[i].cutoffEnabled.floatValue = cutoffEnabled ? 1 : 0;
                         if (cutoffEnabled)
                         {
-                            m_MaterialEditor.ShaderProperty(subProperties[i].cutoff, Styles.alphaCutoffText.text, MaterialEditor.kMiniTextureFieldLabelIndentLevel);
+                            EditorGUI.indentLevel++;
+                            m_MaterialEditor.ShaderProperty(subProperties[i].cutoff, Styles.alphaCutoffText.text);
+                            EditorGUI.indentLevel--;
                         }
                     }
 
@@ -342,7 +430,9 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
                         subProperties[i].emissionEnabled.floatValue = subEmissionEnabled ? 1 : 0;
                         if (subEmissionEnabled)
                         {
-                            m_MaterialEditor.ShaderProperty(subProperties[i].emissionColorForRendering, Styles.emissionColorText, MaterialEditor.kMiniTextureFieldLabelIndentLevel);
+                            EditorGUI.indentLevel++;
+                            m_MaterialEditor.ShaderProperty(subProperties[i].emissionColorForRendering, Styles.emissionColorText);
+                            EditorGUI.indentLevel--;
                             //subProperties[i].emissionColorForRendering.colorValue = EditorGUILayout.ColorField(
                             //    Styles.emissionColorText,
                             //    subProperties[i].emissionColorForRendering.colorValue,
@@ -392,8 +482,6 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
 
     static void SetMaterialKeywords(Material material)
     {
-        // Note: keywords must be based on Material value not on MaterialProperty due to multi-edit & material animation
-        // (MaterialProperty value might come from renderer material property block)
         SetKeyword(material, "_NORMALMAP", material.GetTexture("_BumpMap"));
 
         if (material.HasProperty("_SpecularMap"))
@@ -401,9 +489,6 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
             SetKeyword(material, "_SPECULARMAP", material.GetTexture("_SpecularMap"));
         }
 
-        // A material's GI flag internally keeps track of whether emission is enabled at all, it's enabled but has no effect
-        // or is enabled and may be modified at runtime. This state depends on the values of the current flag and emissive color.
-        // The fixup routine makes sure that the material is in the correct state if/when changes are made to the mode or color.
         MaterialEditor.FixupEmissiveFlag(material);
         bool shouldEmissionBeEnabled = (material.globalIlluminationFlags & MaterialGlobalIlluminationFlags.EmissiveIsBlack) == 0;
         SetKeyword(material, "_EMISSION", shouldEmissionBeEnabled);
