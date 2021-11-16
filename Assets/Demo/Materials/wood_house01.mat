@@ -1,0 +1,191 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: wood_house01
+  m_Shader: {fileID: 4800000, guid: 71010b4fbf18b4015bbc86114f978413, type: 3}
+  m_ShaderKeywords: SUBTEX0_CUTOFF_ENABLE_ON SUBTEX0_ENABLE_ON SUBTEX2_ENABLE_ON
+    _COMPACT_SUB0 _COMPACT_SUB1 _COMPACT_SUB2 _COMPACT_SUB3 _COMPACT_TEXTURE _EMISSION
+    _NORMALMAP _SPECULARMAP
+  m_LightmapFlags: 2
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BumpMap:
+        m_Texture: {fileID: 2800000, guid: e970700a7f5c24925ba563269f513dc7, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailAlbedoMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMap:
+        m_Texture: {fileID: 2800000, guid: fa3ef8b683d6e4f6f87f03021f0efd65, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: df805e8a39a5f4a9e9196e73afb1f091, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OcclusionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ParallaxMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SpecGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SpecularMap:
+        m_Texture: {fileID: 2800000, guid: ea99f5e3ad4024c6f9ea4da4def5d64d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SubNormalDummy0:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SubNormalDummy1:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 2, y: 1}
+        m_Offset: {x: 0, y: 2}
+    - _SubNormalDummy2:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 2, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SubNormalDummy3:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SubTex0:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 2, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SubTexDummy0:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 3, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SubTexDummy1:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 2, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SubTexDummy2:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 2, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SubTexDummy3:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _BumpScale: 1
+    - _Cutoff: 0.5
+    - _DetailNormalMapScale: 1
+    - _DstBlend: 0
+    - _GlossMapScale: 1
+    - _Glossiness: 0.346
+    - _GlossyReflections: 1
+    - _Metallic: 1
+    - _Mode: 0
+    - _OcclusionStrength: 1
+    - _Parallax: 0.02
+    - _SeamCleaner: 1
+    - _Shininess: 0.078125
+    - _SmoothnessTextureChannel: 0
+    - _SpecularHighlights: 1
+    - _SrcBlend: 1
+    - _SubCutoff0: 0.5
+    - _SubCutoff0Enabled: 0
+    - _SubCutoff0Enalbed: 1
+    - _SubCutoff1: 0.5
+    - _SubCutoff1Enabled: 1
+    - _SubCutoff1Enalbed: 1
+    - _SubCutoff2: 0.5
+    - _SubCutoff2Enabled: 0
+    - _SubCutoff2Enalbed: 1
+    - _SubCutoff3: 0.5
+    - _SubCutoff3Enabled: 1
+    - _SubCutoff3Enalbed: 1
+    - _SubEmission0Enabled: 0
+    - _SubEmission1Enabled: 0
+    - _SubEmission2Enabled: 0
+    - _SubEmission3Enabled: 1
+    - _SubPadding0: 0.151
+    - _SubPadding1: 0.002
+    - _SubPadding2: 0
+    - _SubPadding3: 0
+    - _SubSeamCleaner0: 0.62
+    - _SubSeamCleaner1: 0.996
+    - _SubSeamCleaner2: 0.996
+    - _SubSeamCleaner3: 0.996
+    - _SubShininess0: 0.078125
+    - _SubShininess1: 0.078125
+    - _SubShininess2: 0.078125
+    - _SubShininess3: 0.085
+    - _SubSpecular0Enabled: 1
+    - _SubSpecular1Enabled: 1
+    - _SubSpecular2Enabled: 0
+    - _SubSpecular3Enabled: 1
+    - _SubTex0Cutoff: 0.5
+    - _SubTex0CutoffEnabled: 1
+    - _SubTex0Enabled: 1
+    - _SubTex0Enalbed: 1
+    - _SubTex1Cutoff: 0.5
+    - _SubTex1CutoffEnabled: 0
+    - _SubTex1Enabled: 1
+    - _SubTex1Enalbed: 1
+    - _SubTex2Cutoff: 0.5
+    - _SubTex2CutoffEnabled: 0
+    - _SubTex2Enabled: 1
+    - _SubTex2Enalbed: 1
+    - _SubTex3Cutoff: 0.5
+    - _SubTex3CutoffEnabled: 0
+    - _SubTex3Enabled: 1
+    - _SubTex3Enalbed: 1
+    - _TextureType: 1
+    - _UVSec: 0
+    - _ZWrite: 1
+    m_Colors:
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
+    - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
+    - _SubEmissionColor0: {r: 0, g: 0, b: 0, a: 1}
+    - _SubEmissionColor1: {r: 0, g: 0, b: 0, a: 1}
+    - _SubEmissionColor2: {r: 1, g: 1, b: 1, a: 1}
+    - _SubEmissionColor3: {r: 0.6981132, g: 0.4228655, b: 0.08891065, a: 1}
+    - _SubNormal0: {r: 3, g: 1, b: 0, a: 0}
+    - _SubNormal1: {r: 2.5, g: 1, b: 0, a: 0}
+    - _SubNormal2: {r: 2, g: 1, b: 0, a: 0}
+    - _SubNormal3: {r: 1, g: 1, b: 0, a: 0}
+    - _SubPadding0: {r: 0.09, g: 0.12, b: 0, a: 0}
+    - _SubPadding1: {r: 0.17, g: 0.08, b: 0, a: 0}
+    - _SubPadding2: {r: 0, g: 0, b: 0, a: 0}
+    - _SubPadding3: {r: 0, g: 0, b: 0, a: 0}
+    - _SubTex0: {r: 3, g: 1, b: 0, a: 0}
+    - _SubTex1: {r: 2.5, g: 1, b: 0, a: 0}
+    - _SubTex2: {r: 2, g: 1, b: 0, a: 0}
+    - _SubTex3: {r: 1, g: 1, b: 0, a: 0}
