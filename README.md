@@ -1,5 +1,5 @@
 # CompactTexture
-An enhanced version of the Unity Mobile shader that allows textures to be divided into 4 regions and rendered using different strategies, with support for emissive and cutout effects.
+An enhanced version of the Unity Mobile shader that allows textures to be divided into 4 regions and rendered using different strategies, with support for emission and cutout effects.
 
 ## UV Space
 <img src="/Documents/Images/uvspace.png" width="428" height="428" alt="UV Space"></img>
