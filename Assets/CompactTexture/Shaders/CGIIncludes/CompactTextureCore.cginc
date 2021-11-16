@@ -232,8 +232,7 @@ inline void CompactClip(fixed alpha, float2 uv) {
     }
 }
 
-inline half3 CompactEmission(float2 uv)
-{
+inline half3 CompactEmission(float2 uv) {
     half3 emission = 0;
     if (uv.y < 0.5) {
         // sub texture 0, [(0, 0), (0.5, 0.5)]
@@ -264,14 +263,21 @@ inline half3 CompactEmission(float2 uv)
     return emission;
 }
 
-inline fixed4 LightingMobileBlinnPhong(SurfaceOutput s, fixed3 lightDir, fixed3 halfDir, fixed atten)
-{
+inline fixed4 LightingCompactMobileBlinnPhong(SurfaceOutput s, fixed3 lightDir, fixed3 halfDir, fixed atten) {
     fixed diff = max(0, dot (s.Normal, lightDir));
     fixed nh = max(0, dot (s.Normal, halfDir));
     fixed spec = pow(nh, s.Specular * 128) * s.Gloss;
 
     fixed4 c;
+#ifdef _SPECULARMAP
+    if (s.Gloss > 0) {
+        c.rgb = (s.Albedo * _LightColor0.rgb * diff + _LightColor0.rgb * spec) * atten;
+    } else {
+        c.rgb = s.Albedo * _LightColor0.rgb * diff * atten;
+    }
+#else
     c.rgb = (s.Albedo * _LightColor0.rgb * diff + _LightColor0.rgb * spec) * atten;
+#endif
     UNITY_OPAQUE_ALPHA(c.a);
     return c;
 }
@@ -370,12 +376,12 @@ inline void SpecularSetup(float2 uv, inout SurfaceOutput o) {
 #ifdef _COMPACT_TEXTURE
     CompactSpecularSetup(uv, o);
 #else
-    o.Gloss = o.Alpha;
 #   ifdef _SPECULARMAP
-    o.Specular = tex2D(_SpecularMap, uv).r * _Shininess;
+    o.Gloss = tex2D(_SpecularMap, uv).r * o.Alpha;
 #   else
-    o.Specular = _Shininess;
+    o.Gloss = o.Alpha;
 #   endif
+    o.Specular = _Shininess;
 #endif
 }
 

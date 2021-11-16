@@ -1,4 +1,4 @@
-﻿Shader "CompactTexture/Mobile Specular" {
+﻿Shader "CompactTexture/Mobile Specular (1 Directional Realtime Light)" {
     Properties {
         [MainTexture][NoScaleOffset] _MainTex ("Base (RGB) Gloss (A)", 2D) = "white" {}
         [Normal][NoScaleOffset] _BumpMap ("Normalmap", 2D) = "bump" {}
@@ -67,7 +67,7 @@
         LOD 250
 
         CGPROGRAM
-        #pragma surface MobileSurfSpec CompactMobileBlinnPhong exclude_path:prepass nolightmap noforwardadd halfasview interpolateview
+        #pragma surface MobileSurfSpec CompactMobileBlinnPhong exclude_path:prepass nolightmap noforwardadd halfasview novertexlights
 
         #pragma shader_feature_local _NORMALMAP
         #pragma shader_feature _EMISSION
