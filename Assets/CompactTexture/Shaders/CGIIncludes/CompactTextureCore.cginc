@@ -266,7 +266,7 @@ inline half3 CompactEmission(float2 uv) {
 inline fixed4 LightingCompactMobileBlinnPhong(SurfaceOutput s, fixed3 lightDir, fixed3 halfDir, fixed atten) {
     fixed diff = max(0, dot (s.Normal, lightDir));
     fixed nh = max(0, dot (s.Normal, halfDir));
-    fixed spec = pow(nh, s.Specular * 128) * s.Gloss;
+    fixed spec = pow(nh, s.Specular * 128) * s.Gloss;// spec might not be 0 when s.Gloss is 0!
 
     fixed4 c;
 #ifdef _SPECULARMAP
@@ -274,6 +274,18 @@ inline fixed4 LightingCompactMobileBlinnPhong(SurfaceOutput s, fixed3 lightDir, 
         c.rgb = (s.Albedo * _LightColor0.rgb * diff + _LightColor0.rgb * spec) * atten;
     } else {
         c.rgb = s.Albedo * _LightColor0.rgb * diff * atten;
+#ifdef _COMPACT_DEBUG
+        // test 0
+        //if (spec != 0 && s.Gloss == 0) c.rgb = fixed3(1, 0, 0);
+        // test 1
+        const fixed kFixedEpsilon = 0;
+        if (spec < -kFixedEpsilon) c.rgb = fixed3(0, 1, 0);
+        else if (spec > kFixedEpsilon) c.rgb = fixed3(1, 0, 0);
+        else c.b += spec;
+        // test 2
+        //if (spec == 0) c.rgb = fixed3(0, 0, 1);
+        //else c.rgb = fixed3(1, 0, 0);
+#endif
     }
 #else
     c.rgb = (s.Albedo * _LightColor0.rgb * diff + _LightColor0.rgb * spec) * atten;
