@@ -8,8 +8,8 @@ An enhanced version of the Unity Mobile shader that allows textures to be divide
 - Demo without scaled texture.
 
 <img src="/Documents/Images/exampleA.png" width="320" height="320" alt="example A"></img>
-<img src="/Documents/Images/materialA.png" width="345" height="506" alt="material A"></img>
+<img src="/Documents/Images/materialA.png" width="345" height="592" alt="material A"></img>
 - Demo with scaled texture.
 
 <img src="/Documents/Images/exampleB.png" width="320" height="320" alt="example B"></img>
-<img src="/Documents/Images/materialB.png" width="345" height="506" alt="material B"></img>
+<img src="/Documents/Images/materialB.png" width="345" height="592" alt="material B"></img>
