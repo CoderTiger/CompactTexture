@@ -271,7 +271,8 @@ inline fixed4 LightingCompactMobileBlinnPhong(SurfaceOutput s, fixed3 lightDir, 
     fixed4 c;
 #ifdef _SPECULARMAP
     // force spec to be 0 when s.Gloss is 0.
-    if (s.Gloss == 0) spec = 0;
+    const fixed kFixedEpsilon = 0.001;
+    if (s.Gloss < kFixedEpsilon) spec = 0;
 #endif
     c.rgb = (s.Albedo * _LightColor0.rgb * diff + _LightColor0.rgb * spec) * atten;
     UNITY_OPAQUE_ALPHA(c.a);
