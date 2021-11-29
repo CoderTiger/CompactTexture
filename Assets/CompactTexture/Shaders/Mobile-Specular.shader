@@ -63,7 +63,10 @@
         [HideInInspector]_Mode ("__mode", Float) = 0.0
     }
     SubShader {
-        Tags { "RenderType"="Opaque" }
+        Tags {
+            "Queue"="Geometry"
+            "RenderType"="Opaque"
+        }
         LOD 250
 
         CGPROGRAM

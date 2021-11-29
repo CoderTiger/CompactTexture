@@ -194,6 +194,7 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
 
         // NB renderqueue editor is not shown on purpose: we want to override it based on blend mode
         GUILayout.Label(Styles.advancedText, EditorStyles.boldLabel);
+        m_MaterialEditor.RenderQueueField();
         m_MaterialEditor.EnableInstancingField();
         m_MaterialEditor.DoubleSidedGIField();
     }
