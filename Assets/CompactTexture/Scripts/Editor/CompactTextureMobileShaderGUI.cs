@@ -141,7 +141,9 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
 
         if (m_FirstTimeApply)
         {
+            int renderQueue = material.renderQueue;
             MaterialChanged(material);
+            material.renderQueue = renderQueue;
             m_FirstTimeApply = false;
         }
 
@@ -462,12 +464,10 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
             case BlendMode.Opaque:
                 material.SetOverrideTag("RenderType", "");
                 SetKeyword(material, "_CUTOFF", false);
-                material.renderQueue = -1;
                 break;
             case BlendMode.Cutout:
                 material.SetOverrideTag("RenderType", "TransparentCutout");
                 SetKeyword(material, "_CUTOFF", true);
-                material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.AlphaTest;
                 break;
         }
         switch (textureType)
