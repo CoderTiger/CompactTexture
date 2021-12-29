@@ -2,11 +2,11 @@
 // Author: Code Tiger
 // Copyright (c) 2021, MIT Lisence
 //
-Shader "CompactTexture/Mobile" {
+Shader "CompactTexture/Mobile Unlit (Supports Lightmap)" {
     Properties {
-        [MainTexture][NoScaleOffset] _MainTex ("Base (RGB)", 2D) = "white" {}
-        [Normal][NoScaleOffset] _BumpMap ("Normalmap", 2D) = "bump" {}
+        [MainTexture][NoScaleOffset]_MainTex ("Base (RGB)", 2D) = "white" {}
         [NoScaleOffset]_EmissionMap ("Emission Map", 2D) = "white" {}
+        [HDR]_EmissionColor("Emission Color", Color) = (0,0,0)
 
         [HideInInspector]_SubTex0Enabled("", Int) = 1
         [HideInInspector]_SubTex1Enabled("", Int) = 1
@@ -55,26 +55,59 @@ Shader "CompactTexture/Mobile" {
         [HideInInspector]_Mode ("__mode", Float) = 0.0
     }
     SubShader {
-        Tags {
-            "Queue"="Geometry"
-            "RenderType"="Opaque"
+        Tags { "RenderType"="Opaque" }
+        LOD 100
+
+        // Non-lightmapped
+        Pass {
+            Tags { "LightMode" = "Vertex" }
+
+            CGPROGRAM
+
+            #pragma vertex MobileVert
+            #pragma fragment MobileFrag
+            // make fog work
+            #pragma multi_compile_fog
+
+            #pragma shader_feature _EMISSION
+            #pragma shader_feature_local _COMPACT_TEXTURE
+            #pragma shader_feature_local _CUTOFF
+
+            #include "UnityCG.cginc"
+
+            #define COMPACT_VERTEX_FRAGMENT_SHADER
+            #include "CGIIncludes/CompactTextureCore.cginc"
+
+            ENDCG
         }
-        LOD 250
 
-        CGPROGRAM
-        #pragma surface MobileSurf Lambert noforwardadd
+        // Lightmapped
+        Pass {
+            Tags{ "LIGHTMODE" = "VertexLM" "RenderType" = "Opaque" }
 
-        #pragma shader_feature_local _NORMALMAP
-        #pragma shader_feature _EMISSION
+            CGPROGRAM
 
-        #pragma shader_feature_local _COMPACT_TEXTURE
-        #pragma shader_feature_local _CUTOFF
+            #pragma vertex MobileVertLightmapped
+            #pragma fragment MobileFragLightmapped
+            #pragma target 2.0
 
-        #define COMPACT_SURFACE_SHADER
-        #include "CGIIncludes/CompactTextureCore.cginc"
+            #pragma shader_feature _EMISSION
+            #pragma shader_feature_local _COMPACT_TEXTURE
+            #pragma shader_feature_local _CUTOFF
 
-        ENDCG
+            #include "UnityCG.cginc"
+
+            #pragma multi_compile_fog
+            #define USING_FOG (defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2))
+
+            #define COMPACT_VERTEX_FRAGMENT_SHADER
+            #define COMPACT_LIGHTMAPPED
+            #include "CGIIncludes/CompactTextureCore.cginc"
+
+            ENDCG
+        }
+
+        UsePass "Mobile/VertexLit/SHADOWCASTER"
     }
-    FallBack "Mobile/Diffuse"
     CustomEditor "CompactTextureMobileShaderGUI"
 }

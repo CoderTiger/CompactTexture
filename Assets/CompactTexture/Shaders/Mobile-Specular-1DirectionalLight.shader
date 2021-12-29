@@ -1,4 +1,8 @@
-﻿Shader "CompactTexture/Mobile Specular (1 Directional Realtime Light)" {
+﻿//
+// Author: Code Tiger
+// Copyright (c) 2021, MIT Lisence
+//
+Shader "CompactTexture/Mobile Specular (1 Directional Realtime Light)" {
     Properties {
         [MainTexture][NoScaleOffset] _MainTex ("Base (RGB) Gloss (A)", 2D) = "white" {}
         [Normal][NoScaleOffset] _BumpMap ("Normalmap", 2D) = "bump" {}
@@ -79,6 +83,7 @@
         #pragma shader_feature_local _CUTOFF
         #pragma shader_feature_local _SPECULARMAP
 
+        #define COMPACT_SURFACE_SHADER
         #include "CGIIncludes/CompactTextureCore.cginc"
 
         ENDCG

@@ -114,7 +114,7 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
         specularMap = FindProperty("_SpecularMap", props, false);
         shininess = FindProperty("_Shininess", props, false);
         alphaCutoff = FindProperty("_Cutoff", props);
-        bumpMap = FindProperty("_BumpMap", props);
+        bumpMap = FindProperty("_BumpMap", props, false);
         emissionColorForRendering = FindProperty("_EmissionColor", props);
         emissionMap = FindProperty("_EmissionMap", props);
 
@@ -240,7 +240,10 @@ internal class CompactTextureMobileShaderGUI : ShaderGUI
         BlendMode mode = (BlendMode)material.GetFloat("_Mode");
 
         m_MaterialEditor.TextureProperty(albedoMap, Styles.albedoText.text, false);
-        m_MaterialEditor.TextureProperty(bumpMap, Styles.normalMapText.text, false);
+        if (bumpMap != null)
+        {
+            m_MaterialEditor.TextureProperty(bumpMap, Styles.normalMapText.text, false);
+        }
         if (specularMap != null)
         {
             m_MaterialEditor.TextureProperty(specularMap, Styles.specularMapText.text, false);

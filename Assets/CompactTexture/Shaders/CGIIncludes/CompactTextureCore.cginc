@@ -263,6 +263,8 @@ inline half3 CompactEmission(float2 uv) {
     return emission;
 }
 
+#ifdef COMPACT_SURFACE_SHADER
+
 inline fixed4 LightingCompactMobileBlinnPhong(SurfaceOutput s, fixed3 lightDir, fixed3 halfDir, fixed atten) {
     fixed diff = max(0, dot (s.Normal, lightDir));
     fixed nh = max(0, dot (s.Normal, halfDir));
@@ -386,5 +388,143 @@ void MobileSurfSpec(Input IN, inout SurfaceOutput o) {
     float2 uv = MobileSurf(IN, o);
     SpecularSetup(uv, o);
 }
+
+#endif// COMPACT_SURFACE_SHADER
+
+#ifdef COMPACT_VERTEX_FRAGMENT_SHADER
+
+float4 _MainTex_ST;
+
+#ifdef COMPACT_LIGHTMAPPED
+
+struct appdataLightmapped {
+    float3 pos : POSITION;
+    float3 uv1 : TEXCOORD1;
+    float3 uv0 : TEXCOORD0;
+    UNITY_VERTEX_INPUT_INSTANCE_ID
+};
+
+struct v2fLightmapped {
+    float2 uv0 : TEXCOORD0;
+    float2 uv1 : TEXCOORD1;
+#if USING_FOG
+    fixed fog : TEXCOORD2;
+#endif
+    float4 pos : SV_POSITION;
+    UNITY_VERTEX_OUTPUT_STEREO
+};
+
+v2fLightmapped MobileVertLightmapped(appdataLightmapped IN) {
+    v2fLightmapped o;
+    UNITY_SETUP_INSTANCE_ID(IN);
+    UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
+
+    // compute texture coordinates
+    o.uv0 = IN.uv1.xy * unity_LightmapST.xy + unity_LightmapST.zw;
+    o.uv1 = IN.uv0.xy * _MainTex_ST.xy + _MainTex_ST.zw;
+
+    // fog
+#if USING_FOG
+    float3 eyePos = UnityObjectToViewPos(float4(IN.pos, 1));
+    float fogCoord = length(eyePos.xyz);  // radial fog distance
+    UNITY_CALC_FOG_FACTOR_RAW(fogCoord);
+    o.fog = saturate(unityFogFactor);
+#endif
+
+    // transform position
+    o.pos = UnityObjectToClipPos(IN.pos);
+    return o;
+}
+
+fixed4 MobileFragLightmapped(v2fLightmapped IN) : SV_Target {
+    fixed4 col, tex;
+
+    // Fetch lightmap
+    half4 bakedColorTex = UNITY_SAMPLE_TEX2D(unity_Lightmap, IN.uv0.xy);
+    col.rgb = DecodeLightmap(bakedColorTex);
+
+    float2 uv = CompactUV(IN.uv1);
+    // Fetch color texture
+
+    tex = tex2D(_MainTex, uv);
+    col.rgb = tex.rgb * col.rgb;
+
+#ifdef _CUTOFF
+#   ifdef _COMPACT_TEXTURE
+    CompactClip(col.a, uv);
+#   else
+    clip(col.a - _Cutoff);
+#   endif
+#else
+    col.a = 1;
+#endif
+
+#ifdef _EMISSION
+#   ifdef _COMPACT_TEXTURE
+    fixed3 emission = CompactEmission(uv);
+#   else
+    fixed3 emission = tex2D(_EmissionMap, uv).rgb * _EmissionColor.rgb;
+#   endif
+    col.rgb += emission;
+#endif
+    
+    // fog
+#if USING_FOG
+    col.rgb = lerp(unity_FogColor.rgb, col.rgb, IN.fog);
+#endif
+    return col;
+}
+
+#else// !COMPACT_LIGHTMAPPED
+
+struct appdata {
+    float4 vertex : POSITION;
+    float2 uv : TEXCOORD0;
+};
+
+struct v2f {
+    float2 uv : TEXCOORD0;
+    UNITY_FOG_COORDS(1)
+    float4 vertex : SV_POSITION;
+};
+
+v2f MobileVert (appdata v) {
+    v2f o;
+    o.vertex = UnityObjectToClipPos(v.vertex);
+    o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+    UNITY_TRANSFER_FOG(o,o.vertex);
+    return o;
+}
+
+fixed4 MobileFrag (v2f i) : SV_Target {
+    float2 uv = CompactUV(i.uv);
+    // sample the texture
+    fixed4 col = tex2D(_MainTex, uv);
+
+#ifdef _CUTOFF
+#   ifdef _COMPACT_TEXTURE
+    CompactClip(col.a, uv);
+#   else
+    clip(col.a - _Cutoff);
+#   endif
+#endif
+
+#ifdef _EMISSION
+#   ifdef _COMPACT_TEXTURE
+    fixed3 emission = CompactEmission(uv);
+#   else
+    fixed3 emission = tex2D(_EmissionMap, uv).rgb * _EmissionColor.rgb;
+#   endif
+    col.rgb += emission;
+#endif
+    // apply fog
+    UNITY_APPLY_FOG(i.fogCoord, col);
+    
+    return col;
+}
+
+#endif// COMPACT_LIGHTMAPPED
+
+#endif// COMPACT_VERTEX_FRAGMENT_SHADER
 
 #endif
