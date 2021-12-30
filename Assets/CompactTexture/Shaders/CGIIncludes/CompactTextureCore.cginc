@@ -477,26 +477,26 @@ fixed4 MobileFragLightmapped(v2fLightmapped IN) : SV_Target {
 
 #else// !COMPACT_LIGHTMAPPED
 
-struct appdata {
+struct appdataNonlightmapped {
     float4 vertex : POSITION;
     float2 uv : TEXCOORD0;
 };
 
-struct v2f {
+struct v2fNonlightmapped {
     float2 uv : TEXCOORD0;
     UNITY_FOG_COORDS(1)
     float4 vertex : SV_POSITION;
 };
 
-v2f MobileVert (appdata v) {
-    v2f o;
+v2fNonlightmapped MobileVert (appdataNonlightmapped v) {
+    v2fNonlightmapped o;
     o.vertex = UnityObjectToClipPos(v.vertex);
     o.uv = TRANSFORM_TEX(v.uv, _MainTex);
     UNITY_TRANSFER_FOG(o,o.vertex);
     return o;
 }
 
-fixed4 MobileFrag (v2f i) : SV_Target {
+fixed4 MobileFrag (v2fNonlightmapped i) : SV_Target {
     float2 uv = CompactUV(i.uv);
     // sample the texture
     fixed4 col = tex2D(_MainTex, uv);
